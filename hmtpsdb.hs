@@ -17,7 +17,7 @@ findSongs pre dir = do
   list <- getDirectoryContents (pre </> dir) >>= return . map (dir </>) . filter ((/= '.') . head)
   rest <- forM list $ \path -> doesDirectoryExist (pre </> path) >>= \isdir -> if isdir
     then findSongs pre path
-    else if takeExtension path `elem` [".mp3"{-, ".flac"-}] 
+    else if takeExtension path `elem` [".mp3", ".flac"] 
       then getFileStatus (pre </> path) >>= return . (:[]) . (,) path . floor . realToFrac . accessTime
       else return []
   return $ concat rest
