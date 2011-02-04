@@ -18,7 +18,7 @@ sendTrack fn hashname = do
     else do
       tmp <- getProcessID >>= \n -> return $ "/tmp/hmtps-" ++ show n ++ ".mp3"
       convert fn tmp
-      sendMP3 fn hashname
+      sendMP3 tmp hashname
       removeFile tmp
 
 
