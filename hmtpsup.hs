@@ -1,13 +1,7 @@
-{-# INCLUDE "send.h" #-}
-{-# LANGUAGE ForeignFunctionInterface #-}
-
-import Foreign.C
-
-foreign import ccall "initmtp" c_initmtp :: IO ()
-foreign import ccall "endmtp" c_endmtp :: IO ()
-foreign import ccall "sendmp3" c_sendmp3 :: CString -> CString -> IO ()
+import SendFFI
 
 main = do
   putStrLn "foo"
-  c_initmtp
-  c_endmtp
+  initMTP
+  sendMP3 "/hd/media/music/Cujo/Adventures In Foam/06 A Vida.mp3" "test.mp3"
+  endMTP
