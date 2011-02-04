@@ -16,3 +16,6 @@ A useful setup might be to set up a few "profile" directories, each with symboli
 in a global music directory, so that the set of songs on the device can easily be changed (./hmtpsup doesn't
 care about filenames - only SHA512 sums so won't waste time deleting and reuploading files already on there
 from the previous profile)
+
+It might not be very useful if you often copy music off the device, as it stores all songs under one directory
+with their names their source SHA512 sums.
