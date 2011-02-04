@@ -10,7 +10,9 @@ check mtimes, which is fast.
 ./hmtpsup <directory> [<database>]
 This will read the *database* file (same default rules as before) and connect to the first MTP device, first
 removing all tracks not listed in the database (by the SHA512 sums), then add all the songs listed in the
-database but not on the device.
+database but not on the device. If it finds non-mp3 files in the database (find the `".mp3"` .. list in
+hmtpsdb.hs to find more extensions) it will try to convert it using `convert` in hmtpsup.hs -- which you'd
+probably want to change (I keep ffmpeg in a funny place).
 
 A useful setup might be to set up a few "profile" directories, each with symbolic links to perhaps some trees
 in a global music directory, so that the set of songs on the device can easily be changed (./hmtpsup doesn't
