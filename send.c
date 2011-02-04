@@ -38,9 +38,37 @@
 
 #include <tag_c.h>
 
-LIBMTP_folder_t *folders;
-LIBMTP_file_t *files;
-LIBMTP_mtpdevice_t *device;
+static LIBMTP_folder_t *folders;
+static LIBMTP_file_t *files;
+static LIBMTP_mtpdevice_t *device;
+static LIBMTP_track_t *tracks;
+
+void gettracks(){
+	tracks = device? LIBMTP_Get_Tracklisting_With_Callback(device, NULL, NULL) : NULL;
+}
+
+int hastrack(){
+	return !!tracks;
+}
+
+char *curtrack(){
+	return tracks->filename;
+}
+
+int curtrackn(){
+	return tracks->item_id;
+}
+
+void nexttrack(){
+	LIBMTP_track_t *tmp = tracks;
+
+	tracks = tracks->next;
+	LIBMTP_destroy_track_t(tmp);
+}
+
+int delete(int id){
+	return !LIBMTP_Delete_Object(device, id);
+}
 
 static int progress (const uint64_t sent, const uint64_t total, void const * const data){
 	int percent = (sent*100)/total;
@@ -69,6 +97,7 @@ int initmtp(){
 
 void endmtp(){
 	LIBMTP_Release_Device(device);
+	device = NULL;
 }
 
 int sendmp3(char *from, char *to){

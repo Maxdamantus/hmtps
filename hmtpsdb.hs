@@ -1,3 +1,5 @@
+import Common
+
 import Numeric
 import Control.Monad
 import qualified Data.ByteString as B
@@ -15,7 +17,7 @@ findSongs pre dir = do
   list <- getDirectoryContents (pre </> dir) >>= return . map (dir </>) . filter ((/= '.') . head)
   rest <- forM list $ \path -> doesDirectoryExist (pre </> path) >>= \isdir -> if isdir
     then findSongs pre path
-    else if takeExtension path `elem` [".mp3", ".flac"] 
+    else if takeExtension path `elem` [".mp3"{-, ".flac"-}] 
       then getFileStatus (pre </> path) >>= return . (:[]) . (,) path . floor . realToFrac . accessTime
       else return []
   return $ concat rest
@@ -29,14 +31,10 @@ hashSongs pre old new =
       Nothing -> newhash) new
 
 main = do
-  args <- getArgs
-  if length args  `notElem` [1, 2]
-    then getProgName >>= \n -> putStrLn $ n ++ " musicdir [dbfile]"
-    else do
-      let musicdir:rest = args
-      let dbfile = if rest == [] then musicdir </> ".hmtpsdb" else head rest
-      let tmpdbfile = dbfile <.> "tmp"
-      print (musicdir, dbfile)
+  res <- getResources
+  case res of
+    Nothing -> return ()
+    Just (musicdir, dbfile, tmpdbfile) -> do
       db <- do
         exists <- doesFileExist dbfile
         if exists
@@ -45,4 +43,5 @@ main = do
       songs <- findSongs musicdir ""
       hnd <- openFile tmpdbfile WriteMode
       forM (hashSongs musicdir db songs) $ \line -> line >>= hPutStrLn hnd . show
+      hClose hnd
       renameFile tmpdbfile dbfile
