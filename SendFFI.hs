@@ -15,9 +15,9 @@ foreign import ccall "curtrackn" c_curtrackn :: IO CInt
 foreign import ccall "nexttrack" c_nexttrack :: IO ()
 foreign import ccall "delete" c_delete :: CInt -> IO CInt
 
-initMTP = c_initMTP >>= return . (== 0)
+initMTP = c_initMTP >> return () -- >>= return . (== 0)
 
-sendMP3 from to = withCString from $ \cfrom -> withCString to $ \cto -> c_sendmp3 cfrom cto >>= return . (== 0)
+sendMP3 from to = withCString from $ \cfrom -> withCString to $ \cto -> c_sendmp3 cfrom cto >> return () -- >>= return . (/= 0)
 
 loopTracks = do
   has <- c_hastrack

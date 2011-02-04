@@ -77,8 +77,6 @@ int sendmp3(char *from, char *to){
 	if(stat(from, &stats) == -1){
 		fprintf(stderr, "%s: ", from);
 		perror("stat");
-		fflush(stderr);
-		return 0;
 	}else if(S_ISREG(stats.st_mode)){
 		trackmeta = LIBMTP_new_track_t();
 
@@ -93,9 +91,8 @@ int sendmp3(char *from, char *to){
 			trackmeta->artist = taglib_tag_artist(tltag);
 			snprintf(trackmeta->date = date, sizeof date, "%4d0101T0000.0", taglib_tag_year(tltag));
 			trackmeta->tracknumber = taglib_tag_track(tltag);
-		}else{
+		}else
 			fprintf(stderr, "Note: Missing tags in %s\n", from);
-		}
 /*			
 		printf(
 		  "  title : %s\n"
@@ -113,8 +110,7 @@ int sendmp3(char *from, char *to){
 			LIBMTP_Clear_Errorstack(device);
 		}
 
-		trackmeta->filename = trackmeta->title = trackmeta->album = trackmeta->artist =
-		trackmeta->date = NULL;
+		trackmeta->filename = trackmeta->title = trackmeta->album = trackmeta->artist = trackmeta->date = NULL;
 		LIBMTP_destroy_track_t(trackmeta);
 
 		taglib_tag_free_strings();

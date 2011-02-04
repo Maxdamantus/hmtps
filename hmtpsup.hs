@@ -14,7 +14,7 @@ convert src dest = rawSystem "/usr/local/mplayer/bin/ffmpeg" ["-i", src, "-vn", 
 sendTrack fn hashname = do
   let ext = map toLower $ takeExtension fn
   if ext == ".mp3"
-    then sendMP3 fn hashname >> return ()
+    then sendMP3 fn hashname
     else do
       tmp <- getProcessID >>= \n -> return $ "/tmp/hmtps-" ++ show n ++ ".mp3"
       convert fn tmp
@@ -30,6 +30,6 @@ main = getResources >>= \res -> case res of
     tracks <- listTracks >>= return . M.fromList
     forM (map snd . M.toList $ M.difference tracks db) deleteTrack
     let uplist = M.toList $ M.difference db tracks
-    let len = length uplist
-    forM (zip [1..] uplist) $ \(n, (hash, fn)) -> putStrLn ("(" ++ show n ++ "/" ++ show len ++ ") Sending " ++ fn) >> sendTrack (musicdir </> fn) (hash <.> "mp3")
+    let ulen = length uplist
+    forM (zip [1..] uplist) $ \(n, (hash, fn)) -> putStrLn ("(" ++ show n ++ "/" ++ show ulen ++ ") " ++ fn) >> sendTrack (musicdir </> fn) (hash <.> "mp3")
     endMTP
