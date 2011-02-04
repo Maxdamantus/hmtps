@@ -1,0 +1,18 @@
+This is an reasonably simple tool for syncing a directory of music to some MTP device.
+It tries to optimise bandwidth-wise by identifying sources using SHA512 sums.
+
+./hmtpsdb <directory> [<database>]
+This will generate or update the database file, *database* (if unspecified will use *directory*/.hmtpsdb).
+It will sum each file in the tree, unless it already exists in the database file, with the same modification
+time. The first time, it needs to sum everything so could take a while. No differences will just have it
+check mtimes, which is fast.
+
+./hmtpsup <directory> [<database>]
+This will read the *database* file (same default rules as before) and connect to the first MTP device, first
+removing all tracks not listed in the database (by the SHA512 sums), then add all the songs listed in the
+database but not on the device.
+
+A useful setup might be to set up a few "profile" directories, each with symbolic links to perhaps some trees
+in a global music directory, so that the set of songs on the device can easily be changed (./hmtpsup doesn't
+care about filenames - only SHA512 sums so won't waste time deleting and reuploading files already on there
+from the previous profile)
