@@ -29,5 +29,7 @@ main = getResources >>= \res -> case res of
     initMTP
     tracks <- listTracks >>= return . M.fromList
     forM (map snd . M.toList $ M.difference tracks db) deleteTrack
-    forM (M.toList $ M.difference db tracks) $ \(hash, fn) -> putStrLn ("Sending " ++ fn) >> sendTrack (musicdir </> fn) (hash <.> "mp3")
+    let uplist = M.toList $ M.difference db tracks
+    let len = length uplist
+    forM (zip [1..] uplist) $ \(n, (hash, fn)) -> putStrLn ("(" ++ show n ++ "/" ++ show len ++ ") Sending " ++ fn) >> sendTrack (musicdir </> fn) (hash <.> "mp3")
     endMTP

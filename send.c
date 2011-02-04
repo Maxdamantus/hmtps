@@ -41,7 +41,7 @@ int delete(int id){
 }
 
 static int progress (uint64_t sent, uint64_t total, const void *data){
-	printf("Sending: %llu of %llu (%u%%)\r", (unsigned long long)sent, (unsigned long long)total, (unsigned int)(sent*100/total));
+	printf("%llu/%llu (%u%%)\r", (unsigned long long)sent, (unsigned long long)total, (unsigned int)(sent*100/total));
 	fflush(stdout);
 
 	return 0;
