@@ -28,7 +28,7 @@ main = getResources >>= \res -> case res of
     db <- readFile dbfile >>= return . M.fromList . map ((\(a, (b, c)) -> (b, a)) . (read :: String -> (FilePath, (String, Integer)))) . lines
     initMTP
     tracks <- listTracks >>= return . M.fromList
-    forM (map snd . M.toList $ M.difference tracks db) deleteTrack
+    forM (map snd . M.toList $ M.difference tracks db) delete
     let uplist = M.toList $ M.difference db tracks
     let ulen = length uplist
     forM (zip [1..] uplist) $ \(n, (hash, fn)) -> putStrLn ("(" ++ show n ++ "/" ++ show ulen ++ ") " ++ fn) >> sendTrack (musicdir </> fn) (hash <.> "mp3")

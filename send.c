@@ -12,6 +12,7 @@ static LIBMTP_folder_t *folders;
 static LIBMTP_file_t *files;
 static LIBMTP_mtpdevice_t *device;
 static LIBMTP_track_t *tracks;
+static LIBMTP_playlist_t *playlists;
 
 void gettracks(){
 	tracks = device? LIBMTP_Get_Tracklisting_With_Callback(device, NULL, NULL) : NULL;
@@ -36,8 +37,52 @@ void nexttrack(){
 	LIBMTP_destroy_track_t(tmp);
 }
 
+void getplaylists(){
+	playlists = device? LIBMTP_Get_Playlist_List(device) : NULL;
+	printf("getplaylists() -> playlists = %p\n", (void *)playlists);
+}
+
+int hasplaylist(){
+	printf("hasplaylists() = !!%p\n", (void *)playlists);
+	return !!playlists;
+}
+
+char *curplaylist(){
+	printf("curplaylist() = %s\n", playlists->name);
+	return playlists->name;
+}
+
+int curplaylistn(){
+	printf("curplaylistn() = %i\n", playlists->playlist_id);
+	return playlists->playlist_id;
+}
+
+void nextplaylist(){
+	LIBMTP_playlist_t *tmp = playlists;
+
+	playlists = playlists->next;
+	LIBMTP_destroy_playlist_t(tmp);
+}
+
 int delete(int id){
 	return !LIBMTP_Delete_Object(device, id);
+}
+
+void makeplaylist(char *name, uint32_t *ids, int len){
+	LIBMTP_playlist_t *pl;
+	
+	pl = LIBMTP_new_playlist_t();
+	pl->name = name;
+	pl->no_tracks = len;
+	pl->tracks = ids;
+	pl->parent_id = pl->storage_id = 0;
+	if(LIBMTP_Create_New_Playlist(device, pl)){
+		fprintf(stderr, "Couldn't make playlist %s\n", name);
+		fflush(stderr);
+	}
+	pl->tracks = NULL;
+	pl->name = NULL;
+	LIBMTP_destroy_playlist_t(pl);
 }
 
 static int progress (uint64_t sent, uint64_t total, const void *data){
