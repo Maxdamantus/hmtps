@@ -60,7 +60,6 @@ sendSong name path =
 
 sendSongs dir = do
   items <- liftM (map $ \(a, b) -> (b, a)) $ listFiles dir ""
---  items <- liftM (M.fromList . map (\(a, b) -> (b, a))) listFiles dir ""
   tracks <- listTracks
   let itemsm = M.fromList items
   putStrLn "Deleting extra tracks"
