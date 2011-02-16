@@ -49,4 +49,4 @@ delete id = c_delete (fromIntegral id) >>= return . fromIntegral
 listTracks = c_gettracks >> liftM (map (first dropExtension)) (loopItems c_curtrackn c_curtrack c_hastrack c_nexttrack)
 listPlaylists = c_getplaylists >> loopItems c_curplaylistn c_curplaylist c_hasplaylist c_nextplaylist
 
-makePlaylist name ids = withCString name $ \cname -> withArrayLen ids $ \len cids -> c_makeplaylist cname cids (fromIntegral len)
+makePlaylist name ids = withCString name $ \cname -> withArrayLen (map fromIntegral ids) $ \len cids -> c_makeplaylist cname cids (fromIntegral len)
