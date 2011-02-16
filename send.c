@@ -39,21 +39,17 @@ void nexttrack(){
 
 void getplaylists(){
 	playlists = device? LIBMTP_Get_Playlist_List(device) : NULL;
-	printf("getplaylists() -> playlists = %p\n", (void *)playlists);
 }
 
 int hasplaylist(){
-	printf("hasplaylists() = !!%p\n", (void *)playlists);
 	return !!playlists;
 }
 
 char *curplaylist(){
-	printf("curplaylist() = %s\n", playlists->name);
 	return playlists->name;
 }
 
 int curplaylistn(){
-	printf("curplaylistn() = %i\n", playlists->playlist_id);
 	return playlists->playlist_id;
 }
 

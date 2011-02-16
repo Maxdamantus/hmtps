@@ -1,13 +1,7 @@
-all: hmtpsdb hmtpsup hmtpspl
+all: hmtps
 
-hmtpsup: hmtpsup.hs SendFFI.hs send.c
-	ghc --make hmtpsup.hs send.c -lmtp -ltag_c `taglib-config --cflags`
-
-hmtpsdb: hmtpsdb.hs
-	ghc --make hmtpsdb.hs
-
-hmtpspl: hmtpspl.hs
-	ghc --make hmtpspl.hs send.c -lmtp -ltag_c `taglib-config --cflags`
+hmtps: hmtps.hs SendFFI.hs send.c
+	ghc --make hmtps.hs send.c -lmtp -ltag_c `taglib-config --cflags`
 
 clean:
-	rm -f hmtpsdb hmtpsup *.o *.hi
+	rm -f hmtps *.o *.hi

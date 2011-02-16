@@ -1,23 +1,25 @@
 This is an reasonably simple tool for syncing a directory of music to some MTP device.
-It tries to optimise bandwidth-wise by identifying sources using SHA512 sums.
+It tries to optimise bandwidth-wise by identifying sources using modification times and file sizes.
 
-./hmtpsdb <directory> [<database>]
-This will generate or update the database file, *database* (if unspecified will use *directory*/.hmtpsdb).
-It will sum each file in the tree, unless it already exists in the database file, with the same modification
-time. The first time, it needs to sum everything so could take a while. No differences will just have it
-check mtimes, which is fast.
+-m dir
+  will sync dir onto the device; removing tracks from the device that aren't in the directory, and copying
+  tracks onto the device which aren't there already - uniqueness is determined by equal modification times
+  and file sizes.
 
-./hmtpsup <directory> [<database>]
-This will read the *database* file (same default rules as before) and connect to the first MTP device, first
-removing all tracks not listed in the database (by the SHA512 sums), then add all the songs listed in the
-database but not on the device. If it finds non-mp3 files in the database (find the `".mp3"` .. list in
-hmtpsdb.hs to find more extensions) it will try to convert it using `convert` in hmtpsup.hs -- which you'd
-probably want to change (I keep ffmpeg in a funny place).
+-p dir
+  will create a playlist on the device for each directory under dir. it'll also remove any playlists currently
+  on the device. each playlist points at all files under the relevant directory - identified by modification
+  time and file sizes.
+
+The order of arguments is important - `hmtps -p foo -m bar` means to create the playlists before syncing the
+music, which is usually useless (it won't point playlists to songs not on the device). `hmtps -m bar -m baz`
+means to sync it twice - first with the bar directory, then baz (again useless, as it will just waste time
+unless bar and baz are equivalent in the song set).
 
 A useful setup might be to set up a few "profile" directories, each with symbolic links to perhaps some trees
-in a global music directory, so that the set of songs on the device can easily be changed (./hmtpsup doesn't
-care about filenames - only SHA512 sums so won't waste time deleting and reuploading files already on there
-from the previous profile)
+in a global music directory, so that the set of songs on the device can easily be changed (./hmtps doesn't
+care about filenames - only modification times and file sizes, so won't waste time deleting and reuploading
+files already on there from the previous profile)
 
 It might not be very useful if you often copy music off the device, as it stores all songs under one directory
-with their names their source SHA512 sums.
+with their names their modification times and sizes.
