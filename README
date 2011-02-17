@@ -1,4 +1,4 @@
-This is an reasonably simple tool for syncing a directory of music to some MTP device.
+This is a reasonably simple tool for syncing a directory of music to some MTP device.
 It tries to optimise bandwidth-wise by identifying sources using modification times and file sizes.
 
 -m dir
@@ -23,3 +23,7 @@ files already on there from the previous profile)
 
 It might not be very useful if you often copy music off the device, as it stores all songs under one directory
 with their names their modification times and sizes.
+
+There's a chance that two different tracks might have the same file size and modification time .. `hmtps -m`
+should warn if it finds these apparent duplicates - the modification time should be reset for both (but make
+sure they still differ).

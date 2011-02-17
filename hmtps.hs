@@ -18,13 +18,16 @@ import qualified Data.Char as C
 import Data.Maybe
 
 convert src dest = rawSystem "/usr/local/mplayer/bin/ffmpeg" ["-i", src, "-vn", "-sn", "-aq", "0", "-y", dest]
+fileFilter path = map C.toLower (takeExtension path) `elem` [".mp3", ".flac"]
 
 listFiles pre dir = do
   list <- liftM (map (dir </>) . filter ((/= '.') . head)) $ getDirectoryContents (pre </> dir)
   rest <- forM list $ \path ->
     doesDirectoryExist (pre </> path) >>= \isdir -> if isdir
       then listFiles pre path
-      else liftM ((:[]) . (,) path . name) $ getFileStatus (pre </> path)
+      else if fileFilter path
+        then liftM ((:[]) . (,) path . name) $ getFileStatus (pre </> path)
+        else return []
   return $ concat rest
   where name stat = show (modificationTime stat) ++ "-" ++ show (fileSize stat)
 
@@ -65,8 +68,10 @@ sendSongs dir = do
   putStrLn "Deleting extra tracks"
   mapM_ (delete . snd) $ filter (flip M.notMember itemsm . fst) tracks
   let tracksm = M.fromList tracks
-  let copy = filter (flip M.notMember tracksm . fst) items
+  let copy = M.toList $ foldr (\(name, path) -> M.alter (Just . (path:) . fromMaybe []) name) M.empty $ filter (flip M.notMember tracksm . fst) items
+  forM_ copy $ \(name, paths) ->
+    when (length paths /= 1) $ putStrLn $ "Warning: apparent duplicates " ++ show paths
   let amount = length copy
-  forM_ (zip [1..] copy) $ \(count, (name, path)) -> do
+  forM_ (zip [1..] copy) $ \(count, (name, path:_)) -> do
     putStrLn $ "(" ++ show count ++ "/" ++ show amount ++ ") " ++ path
     sendSong name $ dir </> path
